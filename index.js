@@ -1,35 +1,22 @@
 const express = require('express');
-const app = express();
-const nodemailer = require('nodemailer');
 require('dotenv').config();
+const path = require('path');
+const routes = require('./routes/sendText');
+const route = require('./routes/sendHTML');
+const rout = require('./routes/sendEjs');
+
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
+app.use(routes);
+app.use(route);
+app.use(rout);
 
-app.post('/send-email', async (req, res) => {
-    const { to, subject, text } = req.body;
-
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_ADDRESS,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-    });
-
-    const mailOptions = {
-        from: process.env.EMAIL_ADDRESS,
-        to,
-        subject,
-        text,
-    };
-
-    try {
-        await transporter.sendMail(mailOptions);
-        res.status(200).json({ message: 'Email sent successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'An error occurred while sending the email' });
-    }
+app.use(function (err, req, res, next) {
+    res.status(422).send({ error: err.message });
 });
 
 app.listen(process.env.port || 4000, function () {
