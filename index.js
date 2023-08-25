@@ -4,6 +4,7 @@ const path = require('path');
 const routes = require('./routes/sendText');
 const route = require('./routes/sendHTML');
 const rout = require('./routes/sendEjs');
+const routee = require('./routes/sendAttachement');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(routes);
 app.use(route);
 app.use(rout);
+app.use(routee);
 
 app.use(function (err, req, res, next) {
     res.status(422).send({ error: err.message });
